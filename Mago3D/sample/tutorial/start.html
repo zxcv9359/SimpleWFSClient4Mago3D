@@ -28,7 +28,7 @@
 
     <script type="text/javascript" src="../../src/engine/cesium/Cesium.js"></script>
   <style>
-      @import url(../../CesiumBuild/Cesium/Widgets/widgets.css);
+      @import url(../../src/engine/cesium/Widgets/widgets.css);
       html, body, #cesiumContainer {
           width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden;
       }
@@ -82,6 +82,7 @@
         </p>
       </div>
       <div id="wfs-tool">
+				<button id="load-wfs-query" class="btn">Load Query</button>
         <button id="send-wfs-indoor" class="btn">Send Query</button>
       </div>
     </div>

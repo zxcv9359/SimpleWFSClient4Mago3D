@@ -62,9 +62,9 @@ var queryGeometry;
 
 var carto;
 function showClickPosition(position) {
-	if(position.lat !== null) {
-		carto = position;
-	}
+  if(position.lat !== null) {
+    carto = position;
+  }
 }
 
 var drawMouse = function(click) {
@@ -75,7 +75,17 @@ var drawMouse = function(click) {
     var cartesianPosition = Cesium.Cartesian3.fromDegrees(cartoWithHeight[0], cartoWithHeight[1], cartoWithHeight[2]);
     cartoPoints.push(cartoWithHeight);
     points.push(cartesianPosition);
-    //console.log(cartoPoints);
+    drawGeom();
+  }
+}
+
+var drawFromFile = function(cartesian) {
+  var carto = Cesium.Ellipsoid.WGS84.cartesianToCartographic(cartesian);
+  if(cartesian) {
+    var cartoWithHeight = [Cesium.Math.toDegrees(carto.longitude), Cesium.Math.toDegrees(carto.latitude), height];
+    var cartesianPosition = Cesium.Cartesian3.fromDegrees(cartoWithHeight[0], cartoWithHeight[1], cartoWithHeight[2]);
+    cartoPoints.push(cartoWithHeight);
+    points.push(cartesianPosition);
     drawGeom();
   }
 }
@@ -94,10 +104,10 @@ function drawGeom() {
 
   if(points.length > 2) {
     if(type >= 3) {
-	if(points.length == 4) {
-		points.pop();
-		return;
-	}
+  if(points.length == 4) {
+    points.pop();
+    return;
+  }
     }
   }
 
@@ -168,25 +178,25 @@ function drawGeom() {
   }
   if(points.length > 2) {
     if(type >= 3) {
-	ps.push(ps[0]);
-	var instance = new Cesium.GeometryInstance({
-	  geometry : new Cesium.PolygonGeometry({
-	                polygonHierarchy : new Cesium.PolygonHierarchy(
-	                  ps
-	                ),
-	                //material : Cesium.Color.BLUE.withAlpha(0.01),
-	                perPositionHeight : true
-	                //outline : true,
-	                //outlineColor : Cesium.Color.BLACK.withAlpha(0.1),
-	                //outlineWidth : 2.0
-	            })
-	})
-	primitiveCollection.add(new Cesium.Primitive({
-	  geometryInstances : instance,
-	  appearance : new Cesium.MaterialAppearance({
-	    material : Cesium.Material.fromType('Color')
-	  })
-	}));
+  ps.push(ps[0]);
+  var instance = new Cesium.GeometryInstance({
+    geometry : new Cesium.PolygonGeometry({
+                  polygonHierarchy : new Cesium.PolygonHierarchy(
+                    ps
+                  ),
+                  //material : Cesium.Color.BLUE.withAlpha(0.01),
+                  perPositionHeight : true
+                  //outline : true,
+                  //outlineColor : Cesium.Color.BLACK.withAlpha(0.1),
+                  //outlineWidth : 2.0
+              })
+  })
+  primitiveCollection.add(new Cesium.Primitive({
+    geometryInstances : instance,
+    appearance : new Cesium.MaterialAppearance({
+      material : Cesium.Material.fromType('Color')
+    })
+  }));
     }
     if(type >= 4) {
       var instance = new Cesium.GeometryInstance({
@@ -292,9 +302,47 @@ $(function() {
       queryType = drawType;
       handler.removeInputAction(Cesium.ScreenSpaceEventType.LEFT_CLICK);
     });
-
     $( "#prev" ).button().on( "click", function() {
       prevDrawing();
+    });
+
+    $( "#load-wfs-query" ).button().on( "click", function() {
+      $("#slider").show();
+      $("#type").selectmenu("disable");
+      $("#draw").button("disable");
+      $("#prev").button("enable");
+      $("#draw-cancel").button("enable");
+      drawState = true;
+      resetDrawing();
+      var data;
+      var rawFile = new XMLHttpRequest();
+      rawFile.open("GET", '../../input.json', false);
+      rawFile.onreadystatechange = function () {
+         if(rawFile.readyState === 4) {
+           if(rawFile.status === 200 || rawFile.status == 0) {
+             data = rawFile.responseText;
+           }
+         }
+       };
+      rawFile.send(null);
+      var jsonData = JSON.parse(data);
+      drawType = jsonData.type;
+      height = jsonData.height;
+      handle.text(height);
+      var points;
+      for(var i = 0; i<jsonData.points.length; i++){
+        points = new Cesium.Cartesian3(jsonData.points[i].x,jsonData.points[i].y,jsonData.points[i].z)
+        drawFromFile(points);
+      }
+      $("#slider").hide();
+      $("#type").selectmenu("enable");
+      $("#prev").button("disable");
+      $("#draw").button("enable");
+      $("#draw-done").button("disable");
+      $("#draw-cancel").button("disable");
+      drawState = false;
+      queryType = drawType;
+
     });
 
     $( "#draw-cancel" ).button().on( "click", function() {
@@ -312,3 +360,4 @@ $(function() {
     $( "#draw-done" ).button("disable");
     $( "#draw-cancel" ).button("disable");
 });
+
