@@ -81,47 +81,48 @@ $( function() {
   var arrays = Array.from(highlightedEntities);
   
   console.log(arrays);
-  var textFile = null, makeTextFile = function (text) {
-    var data = new Blob([text], {type: 'text/plain'});
+  // <<------------------- 다운로드 
+  // var textFile = null, makeTextFile = function (text) {
+  //   var data = new Blob([text], {type: 'text/plain'});
 
-    // If we are replacing a previously generated file we need to
-    // manually revoke the object URL to avoid memory leaks.
-    if (textFile !== null) {
-      window.URL.revokeObjectURL(textFile);
-    }
+  //   // If we are replacing a previously generated file we need to
+  //   // manually revoke the object URL to avoid memory leaks.
+  //   if (textFile !== null) {
+  //     window.URL.revokeObjectURL(textFile);
+  //   }
 
-    textFile = window.URL.createObjectURL(data);
+  //   textFile = window.URL.createObjectURL(data);
 
-    // returns a URL you can use as a href
-    return textFile;
-  };
+  //   // returns a URL you can use as a href
+  //   return textFile;
+  // };
 
-    var link = document.createElement('a');
-    link.setAttribute('download', 'result.txt');
+  //   var link = document.createElement('a');
+  //   link.setAttribute('download', 'result.txt');
 
-    // for(var i = 0; i < arrays.length; i++){
+  //   // for(var i = 0; i < arrays.length; i++){
 
-    // }
-    function arrayToString(arr) {
-      let str = '';
-      arr.forEach(function(i, index) {
-        str += (index + 1)+ " : "+i;
-        if (index != (arr.length - 1)) {
-          str += '\n';
-        };
-      });
-      return str;
-    }
-    var resultText = arrayToString(arrays);
-    link.href = makeTextFile(resultText);
-    document.body.appendChild(link);
+  //   // }
+  //   function arrayToString(arr) {
+  //     let str = '';
+  //     arr.forEach(function(i, index) {
+  //       str += (index + 1)+ " : "+i;
+  //       if (index != (arr.length - 1)) {
+  //         str += '\n';
+  //       };
+  //     });
+  //     return str;
+  //   }
+  //   var resultText = arrayToString(arrays);
+  //   link.href = makeTextFile(resultText);
+  //   document.body.appendChild(link);
 
-    // wait for the link to be added to the document
-    window.requestAnimationFrame(function () {
-      var event = new MouseEvent('click');
-      link.dispatchEvent(event);
-      document.body.removeChild(link);
-    });
+  //   // wait for the link to be added to the document
+  //   window.requestAnimationFrame(function () {
+  //     var event = new MouseEvent('click');
+  //     link.dispatchEvent(event);
+  //     document.body.removeChild(link);
+  //   });
 
 	changeColorAPI(managerFactory, "workshop.json", "buildings", arrays, "isMain=true", "255,255,0");
     });
